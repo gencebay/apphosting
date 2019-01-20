@@ -1,4 +1,4 @@
-namespace AppHosting
+namespace SharedLibrary
 {
     public class DbSettings
     {

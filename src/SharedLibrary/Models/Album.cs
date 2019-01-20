@@ -2,7 +2,7 @@
 using NetCoreStack.Contracts;
 using System;
 
-namespace AppHosting
+namespace SharedLibrary
 {
     [CollectionName("Albums")]
     public class Album : EntityIdentityBson

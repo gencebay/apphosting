@@ -1,6 +1,6 @@
 ﻿using NetCoreStack.Contracts;
 
-namespace AppHosting
+namespace SharedLibrary
 {
     [CollectionName("Genres")]
     public class Genre : EntityIdentityBson

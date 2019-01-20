@@ -2,7 +2,7 @@
 using MongoDB.Driver;
 using System;
 
-namespace AppHosting
+namespace SharedLibrary
 {
     public class DefaultMongoDatabaseAccessor : IMongoDatabaseAccessor
     {

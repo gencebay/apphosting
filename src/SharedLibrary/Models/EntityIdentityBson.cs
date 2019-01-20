@@ -2,7 +2,7 @@
 using MongoDB.Bson.Serialization.Attributes;
 using NetCoreStack.Contracts;
 
-namespace AppHosting
+namespace SharedLibrary
 {
     public class EntityIdentityBson : IEntity, IEntityIdentity<string>
     {
