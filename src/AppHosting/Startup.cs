@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using SharedLibrary;
 
 namespace AppHosting
@@ -27,15 +27,12 @@ namespace AppHosting
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.Configure<DbSettings>(Configuration.GetSection(nameof(DbSettings)));
+            services.AddScoped<SomeService>();
 
-            services.AddSingleton<IMongoDatabaseAccessor, DefaultMongoDatabaseAccessor>();
-            services.AddSingleton<LookupContext>();
-
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc();
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -49,11 +46,13 @@ namespace AppHosting
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
-            app.UseMvc(routes =>
+            app.UseRouting();
+
+            app.UseEndpoints(endpoints =>
             {
-                routes.MapRoute(
+                endpoints.MapControllerRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }
