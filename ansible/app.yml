@@ -1,0 +1,29 @@
+- name: Cloud hosting machines provisioning
+  hosts: localhost
+  become: yes
+
+  roles: 
+    - lightsail_local
+    - cloud
+  tags: cloud
+
+  environment:
+    AWS_SECRET_KEY: "{{ AWS_SECRET_KEY }}"
+    AWS_ACCESS_KEY: "{{ AWS_ACCESS_KEY }}"  
+
+- hosts: app_hosts
+  gather_facts: False
+  become: true
+  become_method: sudo
+  tasks:
+    - name: Install python to hosts
+      raw: export DEBIAN_FRONTEND=noninteractive && test -e /usr/bin/python || (apt -y update && apt install -y python)
+
+- name: Install NGINX, .NET Core Runtime and the app
+  hosts: app_hosts
+  become: yes
+
+  roles:
+    - nginx 
+    - dotnet
+    - hosting

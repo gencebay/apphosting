@@ -1,0 +1,36 @@
+- name: Create app directory if it doesn't exist
+  file:
+    path: "{{ app_directory }}"
+    state: directory
+    mode: 0755
+- name: Extract app into home directory
+  unarchive:
+    src: "{{ ARCHIVE_PATH }}"
+    dest: "{{ app_directory }}"
+- name: Set environment variable system wide
+  lineinfile:
+    path: ~/.profile
+    regexp: '^ASPNETCORE_ENVIRONMENT='
+    line: ASPNETCORE_ENVIRONMENT=Production
+    state: present
+- name: Ensure build number is set to build file
+  lineinfile:
+    path: "{{ app_directory }}/build"
+    regexp: '^BUILD='
+    line: "BUILD={{ DEPLOYMENT_BUILD_NUMBER }}"
+    state: present
+- name: Check the { service_name }}.service exists
+  stat:
+    path: /etc/systemd/system/{{ service_name }}.service
+  register: service_stat_result
+- name: Create {{ service_name }} service file
+  template: 
+    src: hosting.service.j2 
+    dest: /etc/systemd/system/{{ service_name }}.service
+  when: service_stat_result.stat.exists == False 
+- name: Enable hosting service
+  service: name={{ service_name }} enabled=yes
+- name: Ensure hosting service restarted
+  service: name={{service_name}} state=restarted
+  notify: restart nginx
+  

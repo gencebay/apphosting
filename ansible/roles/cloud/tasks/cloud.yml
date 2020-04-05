@@ -1,0 +1,35 @@
+- name: App instance loop item
+  debug:
+    var: item
+  
+- name: Ensure {{ item.instance_name }} instance is running
+  lightsail:
+    state: running
+    name: "{{ item.instance_name }}"
+    region: "{{ aws_region }}"
+    zone: "{{ aws_zone }}"
+    blueprint_id: "{{ item.aws_blueprint_id }}"
+    bundle_id: "{{ item.aws_bundle_id }}"
+    key_pair_name: "{{ aws_keypair_name }}"
+    wait: yes
+  register: ls_result
+  
+- debug:
+    msg: "name: {{ ls_result.instance.name }} private IP: {{ ls_result.instance.private_ip_address }}"
+
+- name: Add instance to in memory host list
+  add_host:
+    hostname: "{{ ls_result.instance.private_ip_address }}"
+    groups: "app_hosts"
+    instance_name: "{{ ls_result.instance.name }}"
+    ansible_user: "{{ ansible_user }}"
+    ansible_python_interpreter: /usr/bin/python
+    ansible_ssh_private_key_file: "/home/{{ ansible_user }}/.ssh/{{ aws_keypair_name }}.pem"
+    host_key_checking: false
+
+- name: Wait for the {{ item.instance_name }} ready to connect
+  wait_for:
+    host: "{{ ls_result.instance.private_ip_address }}"
+    port: 22
+    state: started
+

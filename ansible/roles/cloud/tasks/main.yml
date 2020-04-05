@@ -1,0 +1,21 @@
+- name: Create instance name list
+  set_fact:
+    app_instances: "{{ app_instances|default([]) + [app_host | combine({'instance_name': item})] }}"
+  with_sequence: count={{ app_host_count }} format={{ app_host.instance_prefix }}-%s
+  register: app_instances
+
+- name: Get running instances
+  lightsail_get_instances:
+    region: "{{ aws_region }}"
+  register: aws_result
+
+- set_fact:
+    exist_app_instances: "{{ aws_result.instances }}"
+
+- include: cloud.yml
+  loop: "{{ app_instances }}"
+
+- name: In memory host list info
+  debug:
+    msg: "{{ hostvars[item].instance_name }}"
+  loop: "{{ groups['app_hosts'] }}"

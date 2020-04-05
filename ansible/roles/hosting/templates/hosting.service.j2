@@ -1,0 +1,17 @@
+[Unit]
+Description=Cloud scalable web app
+
+[Service]
+WorkingDirectory={{ app_directory }}
+ExecStart=/usr/bin/dotnet {{ app_entry_dll }}
+Restart=always
+# Restart service after 10 seconds if the dotnet service crashes:
+RestartSec=10
+KillSignal=SIGINT
+SyslogIdentifier=dotnet-app-logs
+User={{ ansible_user }}
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
+
+[Install]
+WantedBy=multi-user.target

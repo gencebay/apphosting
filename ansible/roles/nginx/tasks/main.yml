@@ -1,0 +1,18 @@
+- name: Install NGINX
+  apt: name={{ item }} update_cache=yes state=latest
+  loop: [ 'nginx' ]
+- name: Copy the nginx default config file
+  copy: src=nginx-conf.orig dest=/etc/nginx/nginx.conf
+- name: Set up nginx config directory
+  file: 
+    path: /etc/nginx/{{ item }}
+    state: directory
+  loop: [ 'sites-available', 'sites-enabled' ]
+- name: Copy site config
+  template: src=sites-available/placeholder.com.j2 dest=/etc/nginx/sites-available/{{ site_domain }}
+- name: Ensure site enabled
+  file: 
+    src: /etc/nginx/sites-available/{{ site_domain }} 
+    dest: /etc/nginx/sites-enabled/{{ site_domain }} 
+    state: link
+  notify: reload nginx

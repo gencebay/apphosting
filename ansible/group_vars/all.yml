@@ -1,0 +1,20 @@
+# The global variable file
+ansible_user: ubuntu
+site_domain: netcorestack.com
+subdomain_name: webapp
+site_default_port: 5000
+service_name: apphostingd
+app_entry_dll: AppHosting.dll
+app_directory: /var/www/app
+dotnet_runtime: dotnet-runtime-3.1
+aws_region: eu-central-1
+aws_zone: eu-central-1a
+aws_micro_bundle_id: micro_2_0
+aws_keypair_name: CloudSSHKey
+
+app_host_count: 1
+
+app_host:
+ instance_prefix: app-host
+ aws_bundle_id: nano_2_0
+ aws_blueprint_id: ubuntu_18_04
